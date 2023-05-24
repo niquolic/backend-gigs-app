@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     // Link the related service
@@ -40,7 +42,7 @@ public class UserController {
             // Put the datas in the token
             String token = Jwts.builder()
                     .setSubject(userEntity.getLogin())
-                    .claim("id", userEntity.getId())
+                    .claim("userId", userEntity.getId())
                     .setIssuedAt(new Date())
                     .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                     .signWith(SignatureAlgorithm.HS512, jwtSecret)
