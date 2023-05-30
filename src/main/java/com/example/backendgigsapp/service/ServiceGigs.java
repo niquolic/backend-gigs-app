@@ -12,7 +12,7 @@ public class ServiceGigs {
     GigsRepository gigsRepo;
 
      public List<GigsEntity> getGigsByUserId(Long id){
-         return gigsRepo.findByUserId(id);
+         return gigsRepo.findByUserIdOrderByDateDesc(id);
      }
 
 }

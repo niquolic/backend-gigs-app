@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface GigsRepository extends CrudRepository<GigsEntity, Long> {
 
-    List<GigsEntity> findByUserId(Long id);
+    List<GigsEntity> findByUserIdOrderByDateDesc(Long id);
 
 }
