@@ -33,4 +33,14 @@ public class GigsController {
         return gigsRepository.save(gig);
     }
 
+    @PostMapping("/deleteGig")
+    public ResponseEntity <String> deleteGig(@RequestBody long id){
+        if (gigsRepository.existsById(id)) {
+            gigsRepository.deleteById(id);
+            return ResponseEntity.ok("Concert supprimé");
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
