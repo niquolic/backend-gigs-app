@@ -45,7 +45,18 @@ public class GigsController {
 
     @GetMapping("/getGigById")
     public Optional<GigsEntity> getGigById(@RequestParam Long id){
+        System.out.println("id:" + id);
         return serviceGigs.getGigById(id);
+    }
+
+    @PostMapping("/editGig")
+    public ResponseEntity <String> editGig(@RequestBody GigsEntity gig){
+        if (gigsRepository.existsById(gig.getId())){
+            gigsRepository.save(gig);
+            return ResponseEntity.ok("Concert modifié");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
