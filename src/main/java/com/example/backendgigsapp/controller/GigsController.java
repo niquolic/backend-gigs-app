@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.NoSuchElementException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -41,6 +41,11 @@ public class GigsController {
         }else{
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/getGigById")
+    public Optional<GigsEntity> getGigById(@RequestParam Long id){
+        return serviceGigs.getGigById(id);
     }
 
 }
