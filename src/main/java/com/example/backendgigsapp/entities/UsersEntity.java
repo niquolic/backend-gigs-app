@@ -1,16 +1,14 @@
 package com.example.backendgigsapp.entities;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
 @Data
-@Entity
-@Table(name = "users")
+@Document("users")
 public class UsersEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, length = 11)
-    private Long id;
+    private String id;
     private String login;
     private String password;
 

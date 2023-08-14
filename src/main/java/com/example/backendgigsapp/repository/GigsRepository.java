@@ -1,14 +1,13 @@
 package com.example.backendgigsapp.repository;
 import com.example.backendgigsapp.entities.GigsEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface GigsRepository extends CrudRepository<GigsEntity, Long> {
+public interface GigsRepository extends MongoRepository<GigsEntity, String> {
 
-    List<GigsEntity> findByUserIdOrderByDateDesc(Long id);
-
-    Optional<GigsEntity> findById(Long id);
-
+    @Query("{'userId': ?0}")
+    List<GigsEntity> findByUserIdOrderByDateDesc(Long userId);
 }
+
