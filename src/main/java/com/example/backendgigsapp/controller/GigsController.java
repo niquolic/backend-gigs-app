@@ -10,14 +10,13 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/api")
 public class GigsController {
 
     @Autowired
     private ServiceGigs serviceGigs;
 
     @GetMapping("/getGigsByUserId")
-    public List<GigsEntity> getGigsByUserId(@RequestParam Long userId) {
+    public List<GigsEntity> getGigsByUserId(@RequestParam String userId) {
         return serviceGigs.getGigsByUserId(userId);
     }
 

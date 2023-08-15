@@ -13,7 +13,7 @@ public class ServiceGigs {
     @Autowired
     private GigsRepository gigsRepo;
 
-    public List<GigsEntity> getGigsByUserId(Long userId) {
+    public List<GigsEntity> getGigsByUserId(String userId) {
         return gigsRepo.findByUserIdOrderByDateDesc(userId);
     }
 

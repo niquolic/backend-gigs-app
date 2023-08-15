@@ -8,6 +8,6 @@ import java.util.List;
 public interface GigsRepository extends MongoRepository<GigsEntity, String> {
 
     @Query("{'userId': ?0}")
-    List<GigsEntity> findByUserIdOrderByDateDesc(Long userId);
+    List<GigsEntity> findByUserIdOrderByDateDesc(String userId);
 }
 
