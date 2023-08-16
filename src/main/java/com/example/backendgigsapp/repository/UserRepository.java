@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.Optional;
 
-public interface UserRepository extends MongoRepository<UsersEntity, Long> {
+public interface UserRepository extends MongoRepository<UsersEntity, String> {
 
     // Search in the database the user by login and password
     @Query("{'login': ?0, 'password': ?1}")

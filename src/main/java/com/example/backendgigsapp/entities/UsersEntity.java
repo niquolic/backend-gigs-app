@@ -3,6 +3,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 @Data
 @Document("users")
 public class UsersEntity {
@@ -11,5 +14,6 @@ public class UsersEntity {
     private String id;
     private String login;
     private String password;
+    private List<String> gigs;
 
 }

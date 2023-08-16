@@ -1,6 +1,7 @@
 package com.example.backendgigsapp.controller;
 import com.example.backendgigsapp.entities.GigsEntity;
 import com.example.backendgigsapp.service.ServiceGigs;
+import com.example.backendgigsapp.service.ServiceUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,26 @@ public class GigsController {
     @Autowired
     private ServiceGigs serviceGigs;
 
+    @Autowired
+    private ServiceUser userService;
+
     @GetMapping("/getGigsByUserId")
     public List<GigsEntity> getGigsByUserId(@RequestParam String userId) {
         return serviceGigs.getGigsByUserId(userId);
     }
 
     @PostMapping("/addGigToList")
-    public GigsEntity addGigToList(@RequestBody GigsEntity gig) {
-        // Ajouter les validations ou la logique métier supplémentaire si nécessaire
-        return serviceGigs.addGig(gig);
+    public GigsEntity addGigToList(@RequestBody GigsEntity gig, @RequestParam String userId) {
+        GigsEntity savedGig = serviceGigs.addGig(gig);
+
+        // Récupérer l'ObjectId du gig inséré
+        String gigObjectId = savedGig.getId();
+
+        // Appeler la méthode addGigsToUser avec l'ObjectId en tant que paramètre
+        // Assurez-vous d'avoir une référence à votre service utilisateur ici
+        userService.addGigsToUser(gigObjectId, userId);
+
+        return savedGig;
     }
 
     @PostMapping("/deleteGig")
