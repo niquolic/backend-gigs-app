@@ -39,9 +39,14 @@ public class GigsController {
     }
 
     @PostMapping("/deleteGig")
-    public ResponseEntity<String> deleteGig(@RequestBody String id) {
+    public ResponseEntity<String> deleteGig(@RequestBody String id, @RequestParam String userId) {
         if (serviceGigs.deleteGig(id)) {
-            return ResponseEntity.ok("Concert supprimé");
+            userService.deleteGig(userId,id);
+            if(userService.deleteGig(userId,id)) {
+                return ResponseEntity.ok("Concert supprimé");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } else {
             return ResponseEntity.notFound().build();
         }

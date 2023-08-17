@@ -22,7 +22,7 @@ public class ServiceUser {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
-    public String addGigsToUser(String gigId, String userId) {
+    public boolean addGigsToUser(String gigId, String userId) {
         Optional<UsersEntity> userOptional = userRepo.findById(userId);
         if (userOptional.isPresent()) {
             UsersEntity user = userOptional.get();
@@ -30,10 +30,23 @@ public class ServiceUser {
             gigsList.add(gigId);
             user.setGigs(gigsList);
             userRepo.save(user);
-
-            return "ok";
+            return true;
         } else {
-            return "User not found";
+            return false;
+        }
+    }
+
+    public boolean deleteGig(String userId, String gigId){
+        Optional<UsersEntity> userOptional = userRepo.findById(userId);
+        if(userOptional.isPresent()){
+            UsersEntity user = userOptional.get();
+            List<String> gigsList = user.getGigs();
+            gigsList.remove(gigId);
+            user.setGigs(gigsList);
+            userRepo.save(user);
+            return true;
+        }else {
+            return false;
         }
     }
 
