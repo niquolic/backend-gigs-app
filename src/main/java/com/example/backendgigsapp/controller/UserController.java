@@ -21,7 +21,7 @@ public class UserController {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expirationMs}")
+    @Value("86400000")
     private int jwtExpirationMs;
 
     @GetMapping("/getUserByLoginAndPassword")
