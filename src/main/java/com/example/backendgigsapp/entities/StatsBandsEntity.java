@@ -1,9 +1,9 @@
 package com.example.backendgigsapp.entities;
 import java.util.List;
 
-public class StatsEntity {
-    private List<String> mostViewedBand;
-    private Long concertsViewed;
+public class StatsBandsEntity {
+    private String bands;
+    private Long count;
     private Long concertsViewedThisYear;
     private List<String> favCountry;
 }
