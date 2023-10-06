@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backendgigsapp.service.ServiceStats;
 import com.example.backendgigsapp.entities.StatsBandsEntity;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -19,7 +21,7 @@ public class StatsController {
     @GetMapping("/getStatsOfUser")
     public ResponseEntity getStatsOfUser(@RequestParam String id){
         try{
-            StatsBandsEntity statsEntity = serviceStats.getStatsOfUser(id);
+            List<StatsBandsEntity> statsEntity = serviceStats.getStatsOfUser(id);
             return ResponseEntity.ok(statsEntity);
         }
         catch (NoSuchElementException e){
