@@ -19,9 +19,9 @@ public class StatsController {
     private ServiceStats serviceStats;
 
     @GetMapping("/getStatsOfUser")
-    public ResponseEntity getStatsOfUser(@RequestParam String id){
+    public ResponseEntity getStatsOfUser(@RequestParam String userId){
         try{
-            List<StatsBandsEntity> statsEntity = serviceStats.getStatsOfUser(id);
+            List<StatsBandsEntity> statsEntity = serviceStats.getStatsOfUser(userId);
             return ResponseEntity.ok(statsEntity);
         }
         catch (NoSuchElementException e){

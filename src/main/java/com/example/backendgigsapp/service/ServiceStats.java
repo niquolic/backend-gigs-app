@@ -12,8 +12,8 @@ public class ServiceStats {
     @Autowired
     private StatsRepository statsRepository;
 
-    public List<StatsBandsEntity> getStatsOfUser(String id){
-        return statsRepository.findTop5BandsByUserId(id);
+    public List<StatsBandsEntity> getStatsOfUser(String userId){
+        return statsRepository.findTop5BandsByUserId(userId);
     }
 
 }
