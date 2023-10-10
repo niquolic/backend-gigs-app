@@ -1,4 +1,5 @@
 package com.example.backendgigsapp.controller;
+import com.example.backendgigsapp.entities.StatsCountryEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -57,6 +58,18 @@ public class StatsController {
             Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             Long numberOfGigsThisYear = serviceStats.getTotalNumberOfGigsThisYear(start, end, userId);
             return ResponseEntity.ok(numberOfGigsThisYear);
+        }
+        catch (NoSuchElementException e){
+            System.out.println(e);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/getCountryStatsOfUser")
+    public ResponseEntity getCountryStatsOfUserId(@RequestParam String userId){
+        try{
+            List<StatsCountryEntity> countryEntity = serviceStats.getCountryStatsOfUser(userId);
+            return ResponseEntity.ok(countryEntity);
         }
         catch (NoSuchElementException e){
             System.out.println(e);

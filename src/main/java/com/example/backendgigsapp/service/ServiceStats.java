@@ -1,5 +1,6 @@
 package com.example.backendgigsapp.service;
 import com.example.backendgigsapp.entities.StatsBandsEntity;
+import com.example.backendgigsapp.entities.StatsCountryEntity;
 import com.example.backendgigsapp.repository.StatsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class ServiceStats {
 
     public Long getTotalNumberOfGigsThisYear(Date start, Date end, String userId){
         return statsRepository.findByYearEqual(start, end, userId);
+    }
+
+    public List<StatsCountryEntity> getCountryStatsOfUser(String userId){
+        return statsRepository.findTop5CountryByUserId(userId);
     }
 
 }
