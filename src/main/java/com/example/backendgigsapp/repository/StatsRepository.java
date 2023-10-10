@@ -3,9 +3,8 @@ import com.example.backendgigsapp.entities.GigsEntity;
 import com.example.backendgigsapp.entities.StatsBandsEntity;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface StatsRepository extends MongoRepository <GigsEntity, Long>{
 
@@ -18,5 +17,18 @@ public interface StatsRepository extends MongoRepository <GigsEntity, Long>{
             "{$limit: 5}"
     })
     List<StatsBandsEntity> findTop5BandsByUserId(String userId);
+
+    @Aggregation(pipeline = {
+            "{$match:  {'userId': ?0}}",
+            "{$group:  { _id:  'id', count:  { $sum:  1 } } }"
+    })
+    Long findAllByUserId(String userId);
+
+    @Aggregation(pipeline = {
+            "{$match: {date: {$gte: ?0, $lt: ?1}, userId: ?2}}",
+            "{$group: {_id: null, count: {$sum: 1}}}",
+            "{$project: {_id: 0, count: 1}}"
+    })
+    Long findByYearEqual(Date start, Date end, String userId);
 
 }
