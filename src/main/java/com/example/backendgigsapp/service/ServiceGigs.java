@@ -2,6 +2,7 @@ package com.example.backendgigsapp.service;
 import com.example.backendgigsapp.entities.GigsEntity;
 import com.example.backendgigsapp.repository.GigsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class ServiceGigs {
     private GigsRepository gigsRepo;
 
     public List<GigsEntity> getGigsByUserId(String userId) {
-        return gigsRepo.findByUserIdOrderByDateDesc(userId);
+        return gigsRepo.findByUserIdOrderByDateDesc(userId, Sort.by(Sort.Order.desc("date")));
     }
 
     public Optional<GigsEntity> getGigById(String id) {
