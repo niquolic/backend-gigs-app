@@ -4,10 +4,14 @@ FROM gradle:7.6.1-jdk17 AS builder
 # Répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copie du build.gradle et des fichiers sources
-COPY build.gradle .
-COPY src ./src
-COPY gradlew .
+# Copier les fichiers nécessaires dans le conteneur
+COPY . .
 
-# Commande pour démarrer l'application Spring Boot
-CMD ["./gradlew", "bootRun"]
+# Exécuter le build Gradle
+RUN ./gradlew build
+
+# Exposer le port sur lequel l'application Spring Boot s'exécute
+EXPOSE 8080
+
+# Commande pour exécuter l'application Spring Boot lorsque le conteneur démarre
+CMD ["java", "-jar", "build/libs/backend-gigs-app-0.0.1-SNAPSHOT.jar"]

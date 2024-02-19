@@ -7,7 +7,6 @@ plugins {
 
 compileJava {
     options.fork = true
-    options.forkOptions.executable = '/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home/bin/javac'
 }
 
 group = 'com.example'
