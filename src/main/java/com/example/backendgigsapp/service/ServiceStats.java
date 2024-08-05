@@ -30,4 +30,12 @@ public class ServiceStats {
         return statsRepository.findTop5CountryByUserId(userId);
     }
 
+    public Double getTotalPrice(String userId){
+        return statsRepository.findTotalPrice(userId);
+    }
+
+    public Double getPriceThisYear(Date start, Date end, String userId){
+        return statsRepository.findPriceThisYear(start, end, userId);
+    }
+
 }

@@ -37,6 +37,7 @@ public class ServiceGigs {
 
     public boolean editGig(GigsEntity gig) {
         if (gigsRepo.existsById(gig.getId())) {
+            System.out.println(gig.getPrice());
             gigsRepo.save(gig);
             return true;
         } else {

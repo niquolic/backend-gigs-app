@@ -19,4 +19,5 @@ public class GigsEntity {
     private String city;
     private String country;
     private String venue;
+    private Double price;
 }

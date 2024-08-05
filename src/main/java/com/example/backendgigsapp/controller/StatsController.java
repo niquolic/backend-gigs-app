@@ -76,4 +76,34 @@ public class StatsController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/getTotalPrice")
+    public ResponseEntity getTotalPrice(@RequestParam String userId){
+        try{
+            Double totalPrice = serviceStats.getTotalPrice(userId);
+            return ResponseEntity.ok(totalPrice);
+        }
+        catch (NoSuchElementException e){
+            System.out.println(e);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/getPriceThisYear")
+    public ResponseEntity getPriceThisYear(@RequestParam String userId){
+        try{
+            LocalDate currentDate = LocalDate.now();
+            LocalDate startDate = LocalDate.of(currentDate.getYear(), 1, 1);
+            LocalDate endDate = startDate.plusYears(1);
+
+            Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Double priceThisYear = serviceStats.getPriceThisYear(start, end, userId);
+            return ResponseEntity.ok(priceThisYear);
+        }
+        catch (NoSuchElementException e){
+            System.out.println(e);
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

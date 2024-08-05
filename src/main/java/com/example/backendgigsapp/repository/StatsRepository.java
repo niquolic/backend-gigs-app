@@ -39,4 +39,16 @@ public interface StatsRepository extends MongoRepository <GigsEntity, Long>{
     })
     List<StatsCountryEntity> findTop5CountryByUserId(String userId);
 
+    @Aggregation(pipeline = {
+            "{$match: {'userId': ?0}}",
+            "{$group: { _id: '$userId', totalPrice: { $sum: { $toDouble: '$price' } } } }"
+    })
+    Double findTotalPrice(String userId);
+
+    @Aggregation(pipeline = {
+            "{$match: {date: {$gte: ?0, $lt: ?1}, userId: ?2}}",
+            "{$group: { _id: '$userId', totalPrice: { $sum: { $toDouble: '$price' } } } }"
+    })
+    Double findPriceThisYear(Date start, Date end, String userId);
+
 }
