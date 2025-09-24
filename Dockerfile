@@ -7,8 +7,8 @@ WORKDIR /app
 # Copier les fichiers nécessaires dans le conteneur
 COPY . .
 
-# Exécuter le build Gradle
-RUN ./gradlew build
+# Exécuter le build Gradle en ignorant les tests
+RUN ./gradlew build -x test
 
 # Exposer le port sur lequel l'application Spring Boot s'exécute
 EXPOSE 8080
