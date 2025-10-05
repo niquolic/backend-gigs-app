@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+    "https://angular-frontend-513726246973.europe-west1.run.app",
+    "http://localhost:4200"
+})
 public class GigsController {
 
     @Autowired

@@ -19,7 +19,10 @@ public class BackendGigsAppApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200")
+                        .allowedOrigins(
+                            "https://angular-frontend-513726246973.europe-west1.run.app",
+                            "http://localhost:4200"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
