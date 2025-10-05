@@ -1,5 +1,11 @@
 # Guide de Déploiement - Gigs App
 
+## Déploiement Docker Hub
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 -t username/repository --push .
+```
+
 ## Variables d'environnement
 
 Définir ces variables avant chaque session de déploiement :
