@@ -1,6 +1,6 @@
 package com.example.backendgigsapp.service;
-import com.example.backendgigsapp.entities.StatsBandsEntity;
-import com.example.backendgigsapp.entities.StatsCountryEntity;
+import com.example.backendgigsapp.entity.StatsBandsEntity;
+import com.example.backendgigsapp.entity.StatsCountryEntity;
 import com.example.backendgigsapp.repository.StatsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

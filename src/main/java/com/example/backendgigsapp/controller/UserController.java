@@ -1,8 +1,10 @@
 package com.example.backendgigsapp.controller;
-import com.example.backendgigsapp.entities.UsersEntity;
+import com.example.backendgigsapp.entity.UsersEntity;
+import com.example.backendgigsapp.request.UserRequest;
 import com.example.backendgigsapp.service.ServiceUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +29,10 @@ public class UserController {
     @Value("2592000000") //30 days token
     private Long jwtExpirationMs;
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String login, @RequestParam String password) {
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid UserRequest userRequest) {
         try {
-            UsersEntity userEntity = serviceUser.login(login, password);
+            UsersEntity userEntity = serviceUser.login(userRequest);
             String token = Jwts.builder()
                     .setSubject(userEntity.getLogin())
                     .claim("userId", userEntity.getId())
@@ -46,12 +48,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/register")
-    public ResponseEntity<String> register(@RequestParam String login, @RequestParam String password) {
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody @Valid UserRequest userRequest) {
         try {
             UsersEntity newUser = new UsersEntity();
-            newUser.setLogin(login);
-            newUser.setPassword(password);
+            newUser.setLogin(userRequest.getLogin());
+            newUser.setPassword(userRequest.getPassword());
             serviceUser.register(newUser);
             return ResponseEntity.ok("User registered successfully. Please log in to your account.");
         } catch (Exception e) {

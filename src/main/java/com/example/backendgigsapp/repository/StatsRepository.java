@@ -1,7 +1,7 @@
 package com.example.backendgigsapp.repository;
-import com.example.backendgigsapp.entities.GigsEntity;
-import com.example.backendgigsapp.entities.StatsBandsEntity;
-import com.example.backendgigsapp.entities.StatsCountryEntity;
+import com.example.backendgigsapp.entity.GigsEntity;
+import com.example.backendgigsapp.entity.StatsBandsEntity;
+import com.example.backendgigsapp.entity.StatsCountryEntity;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Date;

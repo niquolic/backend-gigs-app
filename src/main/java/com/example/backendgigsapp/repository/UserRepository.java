@@ -1,5 +1,5 @@
 package com.example.backendgigsapp.repository;
-import com.example.backendgigsapp.entities.UsersEntity;
+import com.example.backendgigsapp.entity.UsersEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 

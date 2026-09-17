@@ -1,9 +1,8 @@
-package com.example.backendgigsapp.entities;
+package com.example.backendgigsapp.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.List;
 

@@ -1,5 +1,5 @@
 package com.example.backendgigsapp.controller;
-import com.example.backendgigsapp.entities.StatsCountryEntity;
+import com.example.backendgigsapp.entity.StatsCountryEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backendgigsapp.service.ServiceStats;
-import com.example.backendgigsapp.entities.StatsBandsEntity;
+import com.example.backendgigsapp.entity.StatsBandsEntity;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

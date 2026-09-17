@@ -1,5 +1,5 @@
 package com.example.backendgigsapp.service;
-import com.example.backendgigsapp.entities.GigsEntity;
+import com.example.backendgigsapp.entity.GigsEntity;
 import com.example.backendgigsapp.repository.GigsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

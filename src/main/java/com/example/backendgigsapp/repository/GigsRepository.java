@@ -1,5 +1,5 @@
 package com.example.backendgigsapp.repository;
-import com.example.backendgigsapp.entities.GigsEntity;
+import com.example.backendgigsapp.entity.GigsEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

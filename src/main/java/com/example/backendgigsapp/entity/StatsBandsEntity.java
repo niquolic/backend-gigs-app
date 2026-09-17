@@ -1,4 +1,4 @@
-package com.example.backendgigsapp.entities;
+package com.example.backendgigsapp.entity;
 import org.springframework.data.annotation.Id;
 
 public class StatsBandsEntity {

@@ -1,6 +1,7 @@
 package com.example.backendgigsapp.service;
-import com.example.backendgigsapp.entities.UsersEntity;
+import com.example.backendgigsapp.entity.UsersEntity;
 import com.example.backendgigsapp.repository.UserRepository;
+import com.example.backendgigsapp.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,8 @@ public class ServiceUser {
     @Autowired
     private UserRepository userRepo;
 
-    public UsersEntity login(String login, String password) {
-        return userRepo.findByLoginAndPassword(login, password)
+    public UsersEntity login(UserRequest userRequest) {
+        return userRepo.findByLoginAndPassword(userRequest.getLogin(), userRequest.getPassword())
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 

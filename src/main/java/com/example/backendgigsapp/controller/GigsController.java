@@ -1,5 +1,5 @@
 package com.example.backendgigsapp.controller;
-import com.example.backendgigsapp.entities.GigsEntity;
+import com.example.backendgigsapp.entity.GigsEntity;
 import com.example.backendgigsapp.service.ServiceGigs;
 import com.example.backendgigsapp.service.ServiceUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,10 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = {
     "https://angular-frontend-513726246973.europe-west1.run.app",
-    "http://localhost:4200"
+    "http://localhost:4200",
+    "http://localhost:8081",
+    "http://192.168.1.127:8080",
+    "http://localhost:19006"
 })
 public class GigsController {
 
