@@ -24,13 +24,13 @@ public class UserController {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("86400000")
-    private int jwtExpirationMs;
+    @Value("2592000000") //30 days token
+    private Long jwtExpirationMs;
 
-    @GetMapping("/getUserByLoginAndPassword")
-    public ResponseEntity<String> getUserByLoginAndPassword(@RequestParam String login, @RequestParam String password) {
+    @GetMapping("/login")
+    public ResponseEntity<String> login(@RequestParam String login, @RequestParam String password) {
         try {
-            UsersEntity userEntity = serviceUser.getUserByLoginAndPassword(login, password);
+            UsersEntity userEntity = serviceUser.login(login, password);
             String token = Jwts.builder()
                     .setSubject(userEntity.getLogin())
                     .claim("userId", userEntity.getId())
@@ -43,6 +43,20 @@ public class UserController {
         } catch (NoSuchElementException e) {
             System.out.println(e);
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/register")
+    public ResponseEntity<String> register(@RequestParam String login, @RequestParam String password) {
+        try {
+            UsersEntity newUser = new UsersEntity();
+            newUser.setLogin(login);
+            newUser.setPassword(password);
+            serviceUser.register(newUser);
+            return ResponseEntity.ok("User registered successfully. Please log in to your account.");
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().body("Error registering user");
         }
     }
 }

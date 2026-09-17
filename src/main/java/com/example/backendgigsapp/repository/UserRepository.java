@@ -11,4 +11,6 @@ public interface UserRepository extends MongoRepository<UsersEntity, String> {
     @Query("{'login': ?0, 'password': ?1}")
     Optional<UsersEntity> findByLoginAndPassword(String login, String password);
 
+    Optional<UsersEntity> findByLogin(String login);
+
 }

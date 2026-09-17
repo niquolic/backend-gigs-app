@@ -1,12 +1,9 @@
 package com.example.backendgigsapp.service;
 import com.example.backendgigsapp.entities.UsersEntity;
 import com.example.backendgigsapp.repository.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,9 +14,17 @@ public class ServiceUser {
     @Autowired
     private UserRepository userRepo;
 
-    public UsersEntity getUserByLoginAndPassword(String login, String password) {
+    public UsersEntity login(String login, String password) {
         return userRepo.findByLoginAndPassword(login, password)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public void register(UsersEntity user) {
+        final Optional<UsersEntity> foundUser = userRepo.findByLogin(user.getLogin());
+        if (foundUser.isPresent()) {
+            throw new IllegalArgumentException("User with this identifier already exists. PLease choose another identifier.");
+        }
+        userRepo.save(user);
     }
 
     public boolean addGigsToUser(String gigId, String userId) {

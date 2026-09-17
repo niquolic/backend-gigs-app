@@ -21,7 +21,10 @@ public class BackendGigsAppApplication {
                 registry.addMapping("/**")
                         .allowedOrigins(
                             "https://angular-frontend-513726246973.europe-west1.run.app",
-                            "http://localhost:4200"
+                            "http://localhost:4200",
+                            "http://localhost:8081",
+                            "http://192.168.1.127:8080",
+                            "http://localhost:19006"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
