@@ -31,34 +31,23 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid UserRequest userRequest) {
-        try {
-            UsersEntity userEntity = serviceUser.login(userRequest);
-            String token = Jwts.builder()
-                    .setSubject(userEntity.getLogin())
-                    .claim("userId", userEntity.getId())
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                    .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                    .compact();
-
-            return ResponseEntity.ok(token);
-        } catch (NoSuchElementException e) {
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+        UsersEntity userEntity = serviceUser.login(userRequest);
+        String token = Jwts.builder()
+            .setSubject(userEntity.getLogin())
+            .claim("userId", userEntity.getId())
+            .setIssuedAt(new Date())
+            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .compact();
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid UserRequest userRequest) {
-        try {
-            UsersEntity newUser = new UsersEntity();
-            newUser.setLogin(userRequest.getLogin());
-            newUser.setPassword(userRequest.getPassword());
-            serviceUser.register(newUser);
-            return ResponseEntity.ok("User registered successfully. Please log in to your account.");
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.badRequest().body("Error registering user");
-        }
+        UsersEntity newUser = new UsersEntity();
+        newUser.setLogin(userRequest.getLogin());
+        newUser.setPassword(userRequest.getPassword());
+        serviceUser.register(newUser);
+        return ResponseEntity.ok("User registered successfully. Please log in to your account.");
     }
 }

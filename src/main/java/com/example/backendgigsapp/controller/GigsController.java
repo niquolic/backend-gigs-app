@@ -33,14 +33,8 @@ public class GigsController {
     @PostMapping("/addGigToList")
     public GigsEntity addGigToList(@RequestBody GigsEntity gig, @RequestParam String userId) {
         GigsEntity savedGig = serviceGigs.addGig(gig);
-
-        // Récupérer l'ObjectId du gig inséré
         String gigObjectId = savedGig.getId();
-
-        // Appeler la méthode addGigsToUser avec l'ObjectId en tant que paramètre
-        // Assurez-vous d'avoir une référence à votre service utilisateur ici
         userService.addGigsToUser(gigObjectId, userId);
-
         return savedGig;
     }
 
