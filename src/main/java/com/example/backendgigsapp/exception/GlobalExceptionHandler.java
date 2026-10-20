@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +23,13 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
     return buildError(HttpStatus.CONFLICT, e.getMessage());
+  }
+
+  // Filet de sécurité : l'index unique Mongo sur "login" fait échouer la
+  // 2e sauvegarde si deux inscriptions simultanées passent le findByLogin.
+  @ExceptionHandler(DuplicateKeyException.class)
+  public ResponseEntity<String> handleDuplicateKey(DuplicateKeyException e) {
+    return buildError(HttpStatus.CONFLICT, "Ce login est déjà utilisé, choisis-en un autre.");
   }
 
   @ExceptionHandler(NoSuchElementException.class)

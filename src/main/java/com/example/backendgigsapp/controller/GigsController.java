@@ -1,68 +1,48 @@
 package com.example.backendgigsapp.controller;
+
 import com.example.backendgigsapp.entity.GigsEntity;
 import com.example.backendgigsapp.service.ServiceGigs;
-import com.example.backendgigsapp.service.ServiceUser;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = {
-    "https://angular-frontend-513726246973.europe-west1.run.app",
-    "http://localhost:4200",
-    "http://localhost:8081",
-    "http://192.168.1.127:8080",
-    "http://localhost:19006"
-})
 public class GigsController {
 
     @Autowired
     private ServiceGigs serviceGigs;
 
-    @Autowired
-    private ServiceUser userService;
-
+    // Le userId vient de authentication.getName(), rempli par JwtAuthFilter
+    // à partir du token vérifié. Le ?userId= encore envoyé par l'app est
+    // simplement ignoré côté serveur.
     @GetMapping("/getGigsByUserId")
-    public List<GigsEntity> getGigsByUserId(@RequestParam String userId) {
-        return serviceGigs.getGigsByUserId(userId);
+    public List<GigsEntity> getGigsByUserId(Authentication authentication) {
+        return serviceGigs.getGigsByUserId(authentication.getName());
     }
 
     @PostMapping("/addGigToList")
-    public GigsEntity addGigToList(@RequestBody GigsEntity gig, @RequestParam String userId) {
-        GigsEntity savedGig = serviceGigs.addGig(gig);
-        String gigObjectId = savedGig.getId();
-        userService.addGigsToUser(gigObjectId, userId);
-        return savedGig;
+    public GigsEntity addGigToList(@RequestBody @Valid GigsEntity gig, Authentication authentication) {
+        return serviceGigs.addGig(gig, authentication.getName());
     }
 
     @PostMapping("/deleteGig")
-    public ResponseEntity<String> deleteGig(@RequestBody String id, @RequestParam String userId) {
-        if (serviceGigs.deleteGig(id)) {
-            userService.deleteGig(userId,id);
-            if(userService.deleteGig(userId,id)) {
-                return ResponseEntity.ok("Concert supprimé");
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<String> deleteGig(@RequestBody String id, Authentication authentication) {
+        serviceGigs.deleteGig(id, authentication.getName());
+        return ResponseEntity.ok("Concert supprimé");
     }
 
     @GetMapping("/getGigById")
-    public Optional<GigsEntity> getGigById(@RequestParam String id) {
-        return serviceGigs.getGigById(id);
+    public GigsEntity getGigById(@RequestParam String id, Authentication authentication) {
+        return serviceGigs.getOwnedGig(id, authentication.getName());
     }
 
     @PostMapping("/editGig")
-    public ResponseEntity<String> editGig(@RequestBody GigsEntity gig) {
-        if (serviceGigs.editGig(gig)) {
-            return ResponseEntity.ok("Concert modifié");
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<String> editGig(@RequestBody @Valid GigsEntity gig, Authentication authentication) {
+        serviceGigs.editGig(gig, authentication.getName());
+        return ResponseEntity.ok("Concert modifié");
     }
 }

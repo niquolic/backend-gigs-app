@@ -1,17 +1,14 @@
-# Utilisation d'une image de base avec JDK 17 d'Oracle
-FROM gradle:7.6.1-jdk17 AS builder
-
-# Répertoire de travail dans le conteneur
+# Étape 1 : build avec Gradle 9.8.1 + JDK 21
+FROM gradle:9.8.1-jdk21 AS builder
 WORKDIR /app
-
-# Copier les fichiers nécessaires dans le conteneur
 COPY . .
+RUN ./gradlew bootJar -x test --no-daemon
 
-# Exécuter le build Gradle en ignorant les tests
-RUN ./gradlew build -x test
-
-# Exposer le port sur lequel l'application Spring Boot s'exécute
+# Étape 2 : image finale légère, JRE seul (pas besoin de Gradle ni du JDK
+# complet pour exécuter l'app : image plus petite, démarrage Cloud Run plus
+# rapide, surface d'attaque réduite).
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 EXPOSE 8080
-
-# Commande pour exécuter l'application Spring Boot lorsque le conteneur démarre
-CMD ["java", "-jar", "build/libs/backend-gigs-app-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]

@@ -1,112 +1,61 @@
 package com.example.backendgigsapp.controller;
-import com.example.backendgigsapp.entity.StatsCountryEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import com.example.backendgigsapp.service.ServiceStats;
+
 import com.example.backendgigsapp.entity.StatsBandsEntity;
+import com.example.backendgigsapp.entity.StatsCountryEntity;
+import com.example.backendgigsapp.service.ServiceStats;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
-@CrossOrigin(origins = {
-    "https://angular-frontend-513726246973.europe-west1.run.app",
-    "http://localhost:4200"
-})
 public class StatsController {
 
     @Autowired
     private ServiceStats serviceStats;
 
     @GetMapping("/getStatsOfUser")
-    public ResponseEntity getStatsOfUser(@RequestParam String userId){
-        try{
-            List<StatsBandsEntity> statsEntity = serviceStats.getStatsOfUser(userId);
-            return ResponseEntity.ok(statsEntity);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public List<StatsBandsEntity> getStatsOfUser(Authentication authentication) {
+        return serviceStats.getStatsOfUser(authentication.getName());
     }
 
     @GetMapping("/getTotalNumberOfGigs")
-    public ResponseEntity getTotalNumberOfGigs(@RequestParam String userId){
-        try{
-            Long numberOfGigs = serviceStats.getTotalNumberOfGigs(userId);
-            return ResponseEntity.ok(numberOfGigs);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public Long getTotalNumberOfGigs(Authentication authentication) {
+        return serviceStats.getTotalNumberOfGigs(authentication.getName());
     }
 
     @GetMapping("/getTotalNumberOfGigsThisYear")
-    public ResponseEntity getTotalNumberOfGigsThisYear(@RequestParam String userId){
-        try{
-            // Récupération de la date
-            LocalDate currentDate = LocalDate.now();
-            LocalDate startDate = LocalDate.of(currentDate.getYear(), 1, 1);
-            LocalDate endDate = startDate.plusYears(1);
-
-            Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Long numberOfGigsThisYear = serviceStats.getTotalNumberOfGigsThisYear(start, end, userId);
-            return ResponseEntity.ok(numberOfGigsThisYear);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public Long getTotalNumberOfGigsThisYear(Authentication authentication) {
+        Date[] bounds = currentYearBounds();
+        return serviceStats.getTotalNumberOfGigsThisYear(bounds[0], bounds[1], authentication.getName());
     }
 
     @GetMapping("/getCountryStatsOfUser")
-    public ResponseEntity getCountryStatsOfUserId(@RequestParam String userId){
-        try{
-            List<StatsCountryEntity> countryEntity = serviceStats.getCountryStatsOfUser(userId);
-            return ResponseEntity.ok(countryEntity);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public List<StatsCountryEntity> getCountryStatsOfUser(Authentication authentication) {
+        return serviceStats.getCountryStatsOfUser(authentication.getName());
     }
 
     @GetMapping("/getTotalPrice")
-    public ResponseEntity getTotalPrice(@RequestParam String userId){
-        try{
-            Double totalPrice = serviceStats.getTotalPrice(userId);
-            return ResponseEntity.ok(totalPrice);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public Double getTotalPrice(Authentication authentication) {
+        return serviceStats.getTotalPrice(authentication.getName());
     }
 
     @GetMapping("/getPriceThisYear")
-    public ResponseEntity getPriceThisYear(@RequestParam String userId){
-        try{
-            LocalDate currentDate = LocalDate.now();
-            LocalDate startDate = LocalDate.of(currentDate.getYear(), 1, 1);
-            LocalDate endDate = startDate.plusYears(1);
+    public Double getPriceThisYear(Authentication authentication) {
+        Date[] bounds = currentYearBounds();
+        return serviceStats.getPriceThisYear(bounds[0], bounds[1], authentication.getName());
+    }
 
-            Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Double priceThisYear = serviceStats.getPriceThisYear(start, end, userId);
-            return ResponseEntity.ok(priceThisYear);
-        }
-        catch (NoSuchElementException e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    private Date[] currentYearBounds() {
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+        LocalDate endDate = startDate.plusYears(1);
+        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return new Date[]{start, end};
     }
 }
