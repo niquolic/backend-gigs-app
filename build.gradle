@@ -1,16 +1,11 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '4.1.1'
-    // Le plugin Spring Boot gère déjà la BOM de dependency management pour
-    // tous les artefacts org.springframework.boot:* (comportement intégré
-    // depuis Spring Boot 1.4) : io.spring.dependency-management n'était pas
-    // nécessaire ici et a été retiré, une dépendance en moins à maintenir.
     id "io.freefair.lombok" version "9.8.1"
 }
 
-// Force explicitement une version de Lombok à jour, compatible JDK récents
-// (voir le commentaire historique : la version par défaut d'un vieux plugin
-// provoquait "JCImport does not have member field 'qualid'" sur JDK 21+).
 lombok {
     version = "1.18.48"
 }
@@ -32,14 +27,29 @@ repositories {
     mavenCentral()
 }
 
-// jjwt 0.13.0 : l'ancienne API 0.9.1 (2018) utilisée jusqu'ici n'a plus été
-// mise à jour depuis des années et sa façon de signer/vérifier un JWT a
-// depuis changé en profondeur (voir JwtService, réécrit pour la nouvelle
-// API). jjwt-api en compileOnly + annotationProcessor, jjwt-impl et
-// jjwt-jackson en runtimeOnly : c'est le découpage standard recommandé par
-// la librairie depuis sa réorganisation en modules.
 ext {
     jjwtVersion = '0.13.0'
+}
+
+dependencies {
+    // BOM Spring Boot : fournit les versions de tous les starters
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    testImplementation platform(SpringBootPlugin.BOM_COORDINATES)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
 
 dependencies {

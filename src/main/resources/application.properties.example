@@ -1,0 +1,9 @@
+spring.mongodb.uri=mongodb+srv://user:password@dbid.mongodb.net/test?retryWrites=true&w=majority
+spring.mongodb.database=GigsAppDB
+
+jwt.secret=bezKoderSecretKey
+# 30 jours en millisecondes.
+jwt.expirationMs=2592000000
+
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
