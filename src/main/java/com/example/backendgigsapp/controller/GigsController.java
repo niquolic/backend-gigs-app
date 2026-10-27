@@ -29,8 +29,8 @@ public class GigsController {
         return serviceGigs.addGig(gig, authentication.getName());
     }
 
-    @PostMapping("/deleteGig")
-    public ResponseEntity<String> deleteGig(@RequestBody String id, Authentication authentication) {
+    @DeleteMapping("/deleteGig")
+    public ResponseEntity<String> deleteGig(@RequestParam String id, Authentication authentication) {
         serviceGigs.deleteGig(id, authentication.getName());
         return ResponseEntity.ok("Concert supprimé");
     }
