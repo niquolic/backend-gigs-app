@@ -1,0 +1,11 @@
+{
+  "createIndexes": "gigs",
+  "indexes": [
+    {
+      "key": {
+        "userId": 1
+      },
+      "name": "userId_1"
+    }
+  ]
+}
