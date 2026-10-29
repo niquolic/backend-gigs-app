@@ -1,38 +1,39 @@
 package com.example.backendgigsapp.controller;
 
-import com.example.backendgigsapp.entity.UsersEntity;
 import com.example.backendgigsapp.request.UserRequest;
-import com.example.backendgigsapp.security.JwtService;
-import com.example.backendgigsapp.service.ServiceUser;
+import com.example.backendgigsapp.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
 
-    @Autowired
-    private ServiceUser serviceUser;
+    private final UserService userService;
 
-    @Autowired
-    private JwtService jwtService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UserRequest userRequest) {
-        UsersEntity userEntity = serviceUser.login(userRequest);
-        String token = jwtService.generateToken(userEntity.getLogin(), userEntity.getId());
-        return ResponseEntity.ok(token);
+    public ResponseEntity<String> login(@Valid @RequestBody UserRequest userRequest) {
+        return ResponseEntity.ok(userService.login(userRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authorization) {
+        userService.logout(authorization.substring(7));
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid UserRequest userRequest) {
-        UsersEntity newUser = new UsersEntity();
-        newUser.setLogin(userRequest.getLogin());
-        newUser.setPassword(userRequest.getPassword());
-        serviceUser.register(newUser);
-        return ResponseEntity.ok("User registered successfully. Please log in to your account.");
+    public ResponseEntity<String> register(@Valid @RequestBody UserRequest userRequest) {
+        userService.register(userRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("User registered successfully. Please log in to your account.");
     }
 }

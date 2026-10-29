@@ -26,8 +26,6 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    // Hachage des mots de passe (bcrypt) : plus aucun mot de passe stocké
-    // en clair en base à partir de maintenant.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,9 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // CSRF protège les sessions par cookie ; cette API est "stateless"
-            // (auth par token dans le header, jamais par cookie de session),
-            // donc pas de surface CSRF ici.
+            // The API is stateless and authenticates through bearer tokens, not session cookies.
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -48,7 +44,7 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(
                 (request, response, authException) ->
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentification requise")
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
             ))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -58,10 +54,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Ces origines ne servent qu'aux tests depuis un navigateur (Angular
-        // en dev, Expo web). Une fois l'app publiée sur l'App Store, le
-        // client mobile natif n'envoie jamais d'Origin : CORS ne le concerne
-        // pas.
+        // These origins are used by browser-based development clients only.
         configuration.setAllowedOrigins(List.of(
             "https://angular-frontend-513726246973.europe-west1.run.app",
             "http://localhost:4200",
