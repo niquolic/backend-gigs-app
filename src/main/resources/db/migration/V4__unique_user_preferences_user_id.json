@@ -1,0 +1,12 @@
+{
+  "createIndexes": "user_preferences",
+  "indexes": [
+    {
+      "key": {
+        "userId": 1
+      },
+      "name": "userId_1",
+      "unique": true
+    }
+  ]
+}

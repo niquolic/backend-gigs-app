@@ -1,0 +1,11 @@
+{
+  "createIndexes": "users",
+  "indexes": [
+    {
+      "key": {
+        "login": 1
+      },
+      "name": "login_1"
+    }
+  ]
+}
