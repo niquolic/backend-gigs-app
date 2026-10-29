@@ -1,12 +1,10 @@
-# Étape 1 : build avec Gradle 9.8.1 + JDK 21
+# Stage 1: Build with Gradle 9.8.1 and JDK 21.
 FROM gradle:9.8.1-jdk21 AS builder
 WORKDIR /app
 COPY . .
 RUN ./gradlew bootJar -x test --no-daemon
 
-# Étape 2 : image finale légère, JRE seul (pas besoin de Gradle ni du JDK
-# complet pour exécuter l'app : image plus petite, démarrage Cloud Run plus
-# rapide, surface d'attaque réduite).
+# Stage 2: Use a smaller JRE-only image to reduce image size and attack surface.
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar

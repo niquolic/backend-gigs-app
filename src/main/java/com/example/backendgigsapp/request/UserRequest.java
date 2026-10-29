@@ -1,15 +1,14 @@
 package com.example.backendgigsapp.request;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-public class UserRequest {
-  @NotNull(message="Login is required")
-  private String login;
+public record UserRequest(
+        @NotBlank(message = "Login is required")
+        @Size(max = 100, message = "Login must not exceed 100 characters")
+        String login,
 
-  @NotNull(message="Password is required")
-  private String password;
-}
+        @NotBlank(message = "Password is required")
+        @Size(min = 10, max = 72, message = "Password must be between 10 and 72 characters")
+        String password
+) {}

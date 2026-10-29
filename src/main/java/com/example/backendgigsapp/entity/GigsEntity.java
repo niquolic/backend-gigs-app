@@ -18,26 +18,23 @@ public class GigsEntity {
     @Id
     private String id;
 
-    // Index simple (pas unique) : toutes les requêtes de liste et de stats
-    // filtrent sur ce champ (findByUserIdOrderByDateDesc, et toutes les
-    // agrégations de StatsRepository), un index évite un scan complet de
-    // la collection "gigs" à mesure qu'elle grossit.
+    // Indexed because list and statistics queries filter by this field.
     @Indexed
     private String userId;
 
-    @NotEmpty(message = "Au moins un groupe est requis")
+    @NotEmpty(message = "At least one band is required")
     private List<String> bands;
 
-    @NotNull(message = "La date est requise")
+    @NotNull(message = "A date is required")
     private LocalDate date;
 
-    @NotBlank(message = "La ville est requise")
+    @NotBlank(message = "A city is required")
     private String city;
 
-    @NotBlank(message = "Le pays est requis")
+    @NotBlank(message = "A country is required")
     private String country;
 
-    @NotBlank(message = "Le lieu est requis")
+    @NotBlank(message = "A venue is required")
     private String venue;
 
     private Double price;
