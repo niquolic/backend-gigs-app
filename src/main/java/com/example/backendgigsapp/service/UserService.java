@@ -76,22 +76,24 @@ public class UserService {
         user.setLogin(login);
         user.setPassword(passwordEncoder.encode(request.password()));
 
+        UsersEntity savedUser;
         try {
-            UsersEntity savedUser = userRepo.save(user);
-            try {
-                userPreferencesService.createForUser(
-                        savedUser.getId(),
-                        request.language(),
-                        request.currency()
-                );
-            } catch (RuntimeException exception) {
-                // Avoid leaving an account without its required preferences document.
-                userRepo.delete(savedUser);
-                throw exception;
-            }
+            savedUser = userRepo.save(user);
         } catch (DuplicateKeyException exception) {
             // The unique MongoDB index also protects concurrent registrations.
             throw new IllegalArgumentException("That login is already in use. Please choose another.");
+        }
+
+        try {
+            userPreferencesService.createForUser(
+                    savedUser.getId(),
+                    request.language(),
+                    request.currency()
+            );
+        } catch (RuntimeException exception) {
+            // Avoid leaving an account without its required preferences document.
+            userRepo.delete(savedUser);
+            throw exception;
         }
     }
 }
