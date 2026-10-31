@@ -15,13 +15,16 @@ import java.util.NoSuchElementException;
 public class UserService {
 
     private final UserRepository userRepo;
+    private final UserPreferencesService userPreferencesService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RevokedTokenService revokedTokenService;
 
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService,
+    public UserService(UserRepository userRepo, UserPreferencesService userPreferencesService,
+                       PasswordEncoder passwordEncoder, JwtService jwtService,
                        RevokedTokenService revokedTokenService) {
         this.userRepo = userRepo;
+        this.userPreferencesService = userPreferencesService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.revokedTokenService = revokedTokenService;
@@ -72,11 +75,25 @@ public class UserService {
         UsersEntity user = new UsersEntity();
         user.setLogin(login);
         user.setPassword(passwordEncoder.encode(request.password()));
+
+        UsersEntity savedUser;
         try {
-            userRepo.save(user);
+            savedUser = userRepo.save(user);
         } catch (DuplicateKeyException exception) {
             // The unique MongoDB index also protects concurrent registrations.
             throw new IllegalArgumentException("That login is already in use. Please choose another.");
+        }
+
+        try {
+            userPreferencesService.createForUser(
+                    savedUser.getId(),
+                    request.language(),
+                    request.currency()
+            );
+        } catch (RuntimeException exception) {
+            // Avoid leaving an account without its required preferences document.
+            userRepo.delete(savedUser);
+            throw exception;
         }
     }
 }
