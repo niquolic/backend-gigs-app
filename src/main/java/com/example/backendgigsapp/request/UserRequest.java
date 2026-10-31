@@ -10,7 +10,7 @@ public record UserRequest(
         String login,
 
         @NotBlank(message = "Password is required")
-        @Size(min = 10, max = 72, message = "Password must be between 10 and 72 characters")
+        @Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
         String password,
 
         @Pattern(regexp = "^[a-z]{2}(-[A-Z]{2})?$", message = "Language must be a valid language code, such as en or fr-FR")
