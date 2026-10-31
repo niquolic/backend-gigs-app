@@ -1,5 +1,7 @@
 package com.example.backendgigsapp.service;
 
+import com.example.backendgigsapp.dto.BandStatsPageResponse;
+import com.example.backendgigsapp.dto.GigStatsResponse;
 import com.example.backendgigsapp.entity.StatsBandsEntity;
 import com.example.backendgigsapp.entity.StatsCountryEntity;
 import com.example.backendgigsapp.repository.StatsRepository;
@@ -13,36 +15,47 @@ import java.util.List;
 @Service
 public class StatsService {
 
+    private static final int BAND_PAGE_SIZE = 5;
+
     private final StatsRepository statsRepository;
 
     public StatsService(StatsRepository statsRepository) {
         this.statsRepository = statsRepository;
     }
 
-    public List<StatsBandsEntity> getStatsOfUser(String userId) {
-        return statsRepository.findTop5BandsByUserId(userId);
+    public BandStatsPageResponse getStatsOfUser(String userId, int page) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be negative.");
+        }
+
+        long offset = (long) page * BAND_PAGE_SIZE;
+        List<StatsBandsEntity> results = statsRepository.findBandsByUserId(
+                userId,
+                offset,
+                BAND_PAGE_SIZE + 1
+        );
+
+        boolean hasNext = results.size() > BAND_PAGE_SIZE;
+        List<StatsBandsEntity> bands = hasNext
+                ? List.copyOf(results.subList(0, BAND_PAGE_SIZE))
+                : List.copyOf(results);
+
+        return new BandStatsPageResponse(bands, page, BAND_PAGE_SIZE, hasNext);
     }
 
-    public Long getTotalNumberOfGigs(String userId) {
-        return statsRepository.findAllByUserId(userId);
-    }
-
-    public Long getTotalNumberOfGigsThisYear(String userId) {
+    public GigStatsResponse getGigStats(String userId) {
         Date[] bounds = currentYearBounds();
-        return statsRepository.findByYearEqual(bounds[0], bounds[1], userId);
+
+        return new GigStatsResponse(
+                statsRepository.findAllByUserId(userId),
+                statsRepository.findByYearEqual(bounds[0], bounds[1], userId),
+                statsRepository.findTotalPrice(userId),
+                statsRepository.findPriceThisYear(bounds[0], bounds[1], userId)
+        );
     }
 
     public List<StatsCountryEntity> getCountryStatsOfUser(String userId) {
         return statsRepository.findTop5CountryByUserId(userId);
-    }
-
-    public Double getTotalPrice(String userId) {
-        return statsRepository.findTotalPrice(userId);
-    }
-
-    public Double getPriceThisYear(String userId) {
-        Date[] bounds = currentYearBounds();
-        return statsRepository.findPriceThisYear(bounds[0], bounds[1], userId);
     }
 
     private Date[] currentYearBounds() {
