@@ -1,6 +1,7 @@
 package com.example.backendgigsapp.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserRequest(
@@ -10,5 +11,11 @@ public record UserRequest(
 
         @NotBlank(message = "Password is required")
         @Size(min = 10, max = 72, message = "Password must be between 10 and 72 characters")
-        String password
+        String password,
+
+        @Pattern(regexp = "^[a-z]{2}(-[A-Z]{2})?$", message = "Language must be a valid language code, such as en or fr-FR")
+        String language,
+
+        @Pattern(regexp = "^[A-Z]{3}$", message = "Currency must be a three-letter uppercase code, such as EUR or USD")
+        String currency
 ) {}
