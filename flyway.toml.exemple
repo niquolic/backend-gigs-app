@@ -1,0 +1,7 @@
+[environments.mongodb]
+url = "mongodb+srv://xxx:xxxf@db/GigsAppDB?retryWrites=true&w=majority"
+
+[flyway]
+environment = "mongodb"
+locations = ["filesystem:src/main/resources/db/migration"]
+sqlMigrationSuffixes = [".js"]
