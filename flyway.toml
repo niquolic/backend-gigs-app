@@ -1,7 +1,0 @@
-[environments.mongodb]
-url = "mongodb://localhost:27017/GigsAppDB"
-
-[flyway]
-environment = "mongodb"
-locations = ["filesystem:src/main/resources/db/migration"]
-sqlMigrationSuffixes = [".json"]

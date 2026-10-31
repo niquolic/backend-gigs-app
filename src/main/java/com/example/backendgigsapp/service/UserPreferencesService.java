@@ -22,7 +22,19 @@ public class UserPreferencesService {
         preferences.setUserId(new ObjectId(userId));
         preferences.setLanguage(language != null ? language : DEFAULT_LANGUAGE);
         preferences.setCurrency(currency != null ? currency : DEFAULT_CURRENCY);
+        return userPreferencesRepository.save(preferences);
+    }
 
+    public UserPreferencesEntity getForUser(String userId) {
+        ObjectId objectId = new ObjectId(userId);
+        return userPreferencesRepository.findByUserId(objectId)
+                .orElseGet(() -> createForUser(userId, DEFAULT_LANGUAGE, DEFAULT_CURRENCY));
+    }
+
+    public UserPreferencesEntity updateForUser(String userId, String language, String currency) {
+        UserPreferencesEntity preferences = getForUser(userId);
+        preferences.setLanguage(language);
+        preferences.setCurrency(currency);
         return userPreferencesRepository.save(preferences);
     }
 }
