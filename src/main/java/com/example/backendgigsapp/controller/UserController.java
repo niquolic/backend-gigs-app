@@ -1,6 +1,7 @@
 package com.example.backendgigsapp.controller;
 
 import com.example.backendgigsapp.dto.UserPreferencesResponse;
+import com.example.backendgigsapp.entity.UserPreferencesEntity;
 import com.example.backendgigsapp.request.UserPreferencesRequest;
 import com.example.backendgigsapp.request.UserRequest;
 import com.example.backendgigsapp.service.UserPreferencesService;
@@ -47,7 +48,7 @@ public class UserController {
 
     @GetMapping("/user/preferences")
     public UserPreferencesResponse getPreferences(Authentication authentication) {
-        var preferences = userPreferencesService.getForUser(authentication.getName());
+        UserPreferencesEntity preferences = userPreferencesService.getForUser(authentication.getName());
         return new UserPreferencesResponse(preferences.getLanguage(), preferences.getCurrency());
     }
 
@@ -55,7 +56,7 @@ public class UserController {
     public UserPreferencesResponse updatePreferences(
             @Valid @RequestBody UserPreferencesRequest request,
             Authentication authentication) {
-        var preferences = userPreferencesService.updateForUser(
+        UserPreferencesEntity preferences = userPreferencesService.updateForUser(
                 authentication.getName(),
                 request.language(),
                 request.currency()
