@@ -1,26 +1,29 @@
 package com.example.backendgigsapp.repository;
+
 import com.example.backendgigsapp.entity.GigsEntity;
 import com.example.backendgigsapp.entity.StatsBandsEntity;
 import com.example.backendgigsapp.entity.StatsCountryEntity;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
 import java.util.Date;
 import java.util.List;
 
-public interface StatsRepository extends MongoRepository <GigsEntity, Long>{
+public interface StatsRepository extends MongoRepository<GigsEntity, Long> {
 
     @Aggregation(pipeline = {
             "{$match: {'userId': ?0}}",
-            "{$unwind: '$bands' }",
-            "{$group: { _id: '$bands', count: { $sum: 1 } } }",
-            "{$sort: {count: -1}}",
-            "{$limit: 5}"
+            "{$unwind: '$bands'}",
+            "{$group: {_id: '$bands', count: {$sum: 1}}}",
+            "{$sort: {count: -1, _id: 1}}",
+            "{$skip: ?1}",
+            "{$limit: ?2}"
     })
-    List<StatsBandsEntity> findTop5BandsByUserId(String userId);
+    List<StatsBandsEntity> findBandsByUserId(String userId, long offset, int limit);
 
     @Aggregation(pipeline = {
-            "{$match:  {'userId': ?0}}",
-            "{$group:  { _id:  'id', count:  { $sum:  1 } } }"
+            "{$match: {'userId': ?0}}",
+            "{$group: {_id: 'id', count: {$sum: 1}}}"
     })
     Long findAllByUserId(String userId);
 
@@ -32,23 +35,22 @@ public interface StatsRepository extends MongoRepository <GigsEntity, Long>{
     Long findByYearEqual(Date start, Date end, String userId);
 
     @Aggregation(pipeline = {
-        "{$match: {userId: ?0}}",
-        "{$group: {_id: '$country', count: { $sum: 1} } }",
-        "{$sort: {count: -1}}",
-        "{$limit: 5}"
+            "{$match: {userId: ?0}}",
+            "{$group: {_id: '$country', count: {$sum: 1}}}",
+            "{$sort: {count: -1}}",
+            "{$limit: 5}"
     })
     List<StatsCountryEntity> findTop5CountryByUserId(String userId);
 
     @Aggregation(pipeline = {
             "{$match: {'userId': ?0}}",
-            "{$group: { _id: '$userId', totalPrice: { $sum: { $toDouble: '$price' } } } }"
+            "{$group: {_id: '$userId', totalPrice: {$sum: {$toDouble: '$price'}}}}"
     })
     Double findTotalPrice(String userId);
 
     @Aggregation(pipeline = {
             "{$match: {date: {$gte: ?0, $lt: ?1}, userId: ?2}}",
-            "{$group: { _id: '$userId', totalPrice: { $sum: { $toDouble: '$price' } } } }"
+            "{$group: {_id: '$userId', totalPrice: {$sum: {$toDouble: '$price'}}}}"
     })
     Double findPriceThisYear(Date start, Date end, String userId);
-
 }
