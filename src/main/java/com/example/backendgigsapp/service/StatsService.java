@@ -24,7 +24,7 @@ public class StatsService {
         this.statsRepository = statsRepository;
     }
 
-    @Cacheable(cacheNames = "bandStats", key = "#userId + ':' + #page")
+    @Cacheable(cacheNames = "bandStats", key = "#p0 + ':' + #p1")
     public BandStatsPageResponse getStatsOfUser(String userId, int page) {
         if (page < 0) {
             throw new IllegalArgumentException("Page index must not be negative.");
@@ -45,7 +45,7 @@ public class StatsService {
         return new BandStatsPageResponse(bands, page, BAND_PAGE_SIZE, hasNext);
     }
 
-    @Cacheable(cacheNames = "gigStats", key = "#userId")
+    @Cacheable(cacheNames = "gigStats", key = "#p0")
     public GigStatsResponse getGigStats(String userId) {
         Date[] bounds = currentYearBounds();
 
