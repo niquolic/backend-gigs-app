@@ -57,7 +57,7 @@ public class StatsService {
         );
     }
 
-    @Cacheable(cacheNames = "countryStats", key = "#userId")
+    @Cacheable(cacheNames = "countryStats", key = "#p0")
     public List<StatsCountryEntity> getCountryStatsOfUser(String userId) {
         return statsRepository.findTop5CountryByUserId(userId);
     }
