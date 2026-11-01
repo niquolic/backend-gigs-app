@@ -6,6 +6,7 @@ import com.example.backendgigsapp.entity.StatsBandsEntity;
 import com.example.backendgigsapp.entity.StatsCountryEntity;
 import com.example.backendgigsapp.repository.StatsRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -23,6 +24,7 @@ public class StatsService {
         this.statsRepository = statsRepository;
     }
 
+    @Cacheable(cacheNames = "bandStats", key = "#p0 + ':' + #p1")
     public BandStatsPageResponse getStatsOfUser(String userId, int page) {
         if (page < 0) {
             throw new IllegalArgumentException("Page index must not be negative.");
@@ -43,6 +45,7 @@ public class StatsService {
         return new BandStatsPageResponse(bands, page, BAND_PAGE_SIZE, hasNext);
     }
 
+    @Cacheable(cacheNames = "gigStats", key = "#p0")
     public GigStatsResponse getGigStats(String userId) {
         Date[] bounds = currentYearBounds();
 
@@ -54,6 +57,7 @@ public class StatsService {
         );
     }
 
+    @Cacheable(cacheNames = "countryStats", key = "#p0")
     public List<StatsCountryEntity> getCountryStatsOfUser(String userId) {
         return statsRepository.findTop5CountryByUserId(userId);
     }

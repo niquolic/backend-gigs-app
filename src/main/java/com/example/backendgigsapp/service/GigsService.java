@@ -6,6 +6,7 @@ import com.example.backendgigsapp.entity.GigsEntity;
 import com.example.backendgigsapp.mapper.GigMapper;
 import com.example.backendgigsapp.repository.GigsRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class GigsService {
         return gigMapper.toResponse(getOwnedGig(id, userId));
     }
 
+    @CacheEvict(cacheNames = {"bandStats", "gigStats", "countryStats"}, allEntries = true)
     public GigResponse addGig(GigRequest request, String userId) {
         GigsEntity gig = gigMapper.toEntity(request);
         // Never allow a client-provided ID to overwrite an existing document.
@@ -40,10 +42,12 @@ public class GigsService {
         return gigMapper.toResponse(gigsRepo.save(gig));
     }
 
+    @CacheEvict(cacheNames = {"bandStats", "gigStats", "countryStats"}, allEntries = true)
     public void deleteGig(String id, String userId) {
         gigsRepo.delete(getOwnedGig(id, userId));
     }
 
+    @CacheEvict(cacheNames = {"bandStats", "gigStats", "countryStats"}, allEntries = true)
     public GigResponse editGig(GigRequest request, String userId) {
         if (request.id() == null || request.id().isBlank()) {
             throw new IllegalArgumentException("A gig ID is required.");

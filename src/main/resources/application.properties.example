@@ -3,6 +3,10 @@
 spring.mongodb.uri=${MONGODB_URI}
 spring.mongodb.database=${MONGODB_DATABASE:GigsAppDB}
 
+# In-memory statistics cache (30-minute safety expiration).
+spring.cache.type=caffeine
+spring.cache.caffeine.spec=maximumSize=10000,expireAfterWrite=30m
+
 # Use a cryptographically random secret of at least 32 bytes, stored in a secret manager.
 jwt.secret=${JWT_SECRET}
 # 15 minutes by default; review the token/session strategy before changing this.
