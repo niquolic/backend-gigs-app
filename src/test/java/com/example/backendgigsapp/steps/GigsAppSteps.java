@@ -83,6 +83,17 @@ public class GigsAppSteps {
         ), "The login response should be a signed JWT");
     }
 
+    @When("an unauthenticated client requests preferences")
+    public void unauthenticatedClientRequestsPreferences() {
+        requestMap(HttpMethod.GET, "/user/preferences", null, null);
+    }
+
+    @When("an unauthenticated client updates preferences")
+    public void unauthenticatedClientUpdatesPreferences() {
+        requestMap(HttpMethod.PUT, "/user/preferences", null,
+                Map.of("language", "fr", "currency", "EUR"));
+    }
+
     @When("user {string} requests their preferences")
     public void userRequestsPreferences(String login) {
         requestMap(HttpMethod.GET, "/user/preferences", login, null);
@@ -92,6 +103,11 @@ public class GigsAppSteps {
     public void userUpdatesPreferences(String login, String language, String currency) {
         requestMap(HttpMethod.PUT, "/user/preferences", login,
                 Map.of("language", language, "currency", currency));
+    }
+
+    @Then("response contains venue {string}")
+    public void responseContainsVenue(String venue) {
+        assertEquals(venue, requireMapBody().get("venue"));
     }
 
     @Then("response preferences are language {string} and currency {string}")
