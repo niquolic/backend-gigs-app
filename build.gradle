@@ -50,7 +50,10 @@ dependencies {
     testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
     testImplementation "io.cucumber:cucumber-spring:${cucumberVersion}"
 
-    testImplementation "com.decathlon.tzatziki:tzatziki-http:${tzatzikiVersion}"
+    testImplementation("com.decathlon.tzatziki:tzatziki-http:${tzatzikiVersion}") {
+        // Tzatziki core brings PicoContainer by default; Spring uses cucumber-spring instead.
+        exclude group: 'io.cucumber', module: 'cucumber-picocontainer'
+    }
     testImplementation "com.decathlon.tzatziki:tzatziki-spring:${tzatzikiVersion}"
     testImplementation "com.decathlon.tzatziki:tzatziki-spring-mongodb:${tzatzikiVersion}"
 
