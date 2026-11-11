@@ -11,3 +11,11 @@ Feature: User preferences
   Scenario: Updating preferences requires authentication
     When an unauthenticated client requests the gigs list
     Then response status is 401
+
+  Scenario: Reading preferences requires authentication
+    When an unauthenticated client requests preferences
+    Then response status is 401
+
+  Scenario: Updating preferences requires authentication
+    When an unauthenticated client updates preferences
+    Then response status is 401
