@@ -83,12 +83,12 @@ public class GigsAppSteps {
 
     @When("an unauthenticated client requests preferences")
     public void unauthenticatedClientRequestsPreferences() {
-        requestMap(HttpMethod.GET, "/user/preferences", null, null);
+        requestText(HttpMethod.GET, "/user/preferences", null, null);
     }
 
     @When("an unauthenticated client updates preferences")
     public void unauthenticatedClientUpdatesPreferences() {
-        requestMap(HttpMethod.PUT, "/user/preferences", null,
+        requestText(HttpMethod.PUT, "/user/preferences", null,
                 Map.of("language", "fr", "currency", "EUR"));
     }
 
