@@ -3,13 +3,16 @@ package com.example.backendgigsapp.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,22 +22,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GigsAppSteps {
 
-    private final TestRestTemplate restTemplate;
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
     private final Map<String, String> gigIds = new ConcurrentHashMap<>();
     private final Map<String, String> ownerIds = new ConcurrentHashMap<>();
 
-    private ResponseEntity<String> lastTextResponse;
-    private ResponseEntity<Map> lastMapResponse;
+    private ResponseEntity<String> lastResponse;
 
-    public GigsAppSteps(TestRestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public GigsAppSteps(@Value("${local.server.port}") int port, ObjectMapper objectMapper) {
+        this.restClient = RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .build();
+        this.objectMapper = objectMapper;
     }
 
     @Given("user {string} is registered with password {string}")
     public void userIsRegistered(String login, String password) {
         register(login, password, null, null);
-        assertEquals(201, lastTextResponse.getStatusCode().value(), lastTextResponse.getBody());
+        assertEquals(201, lastResponse.getStatusCode().value(), responseBody());
     }
 
     @When("user {string} registers with password {string}")
@@ -49,34 +55,23 @@ public class GigsAppSteps {
 
     @When("user {string} logs in with password {string}")
     public void userLogsIn(String login, String password) {
-        lastMapResponse = null;
-        lastTextResponse = restTemplate.exchange(
-                "/login",
-                HttpMethod.POST,
-                new HttpEntity<>(Map.of("login", login, "password", password), jsonHeaders(null)),
-                String.class
-        );
-        if (lastTextResponse.getStatusCode().is2xxSuccessful()
-                && lastTextResponse.getBody() != null) {
-            tokens.put(login, lastTextResponse.getBody());
+        requestText(HttpMethod.POST, "/login", null, Map.of("login", login, "password", password));
+        if (lastResponse.getStatusCode().is2xxSuccessful() && lastResponse.getBody() != null) {
+            tokens.put(login, lastResponse.getBody());
         }
     }
 
     @Then("response status is {int}")
     public void responseStatusIs(int expectedStatus) {
-        assertNotNull(lastTextResponse != null ? lastTextResponse : lastMapResponse,
-                "No HTTP response has been captured");
-        int actualStatus = lastTextResponse != null
-                ? lastTextResponse.getStatusCode().value()
-                : lastMapResponse.getStatusCode().value();
-        assertEquals(expectedStatus, actualStatus, responseBody());
+        assertNotNull(lastResponse, "No HTTP response has been captured");
+        assertEquals(expectedStatus, lastResponse.getStatusCode().value(), responseBody());
     }
 
     @Then("response contains a JWT")
     public void responseContainsJwt() {
-        assertNotNull(lastTextResponse);
-        assertNotNull(lastTextResponse.getBody());
-        assertTrue(lastTextResponse.getBody().matches(
+        assertNotNull(lastResponse);
+        assertNotNull(lastResponse.getBody());
+        assertTrue(lastResponse.getBody().matches(
                 "[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+"
         ), "The login response should be a signed JWT");
     }
@@ -117,8 +112,7 @@ public class GigsAppSteps {
 
     @When("user {string} creates a gig")
     public void userCreatesGig(String login) {
-        Map<String, Object> body = gigPayload(null, "Le Splendid");
-        requestMap(HttpMethod.POST, "/addGigToList", login, body);
+        requestMap(HttpMethod.POST, "/addGigToList", login, gigPayload(null, "Le Splendid"));
         Map response = requireMapBody();
         gigIds.put(login, String.valueOf(response.get("id")));
         ownerIds.put(login, String.valueOf(response.get("userId")));
@@ -136,7 +130,7 @@ public class GigsAppSteps {
 
     @When("user {string} deletes their gig")
     public void userDeletesTheirGig(String login) {
-        requestMap(HttpMethod.DELETE, "/deleteGig?id=" + gigId(login), login, null);
+        requestText(HttpMethod.DELETE, "/deleteGig?id=" + gigId(login), login, null);
     }
 
     @When("user {string} tries to update {string}'s gig to venue {string}")
@@ -151,27 +145,27 @@ public class GigsAppSteps {
 
     @When("user {string} tries to delete {string}'s gig")
     public void userTriesToDeleteAnotherUsersGig(String login, String owner) {
-        requestMap(HttpMethod.DELETE, "/deleteGig?id=" + gigId(owner), login, null);
+        requestText(HttpMethod.DELETE, "/deleteGig?id=" + gigId(owner), login, null);
     }
 
     @Then("the gig created by {string} still has venue {string}")
     public void gigStillHasVenue(String owner, String venue) {
         requestMap(HttpMethod.GET, "/getGigById?id=" + gigId(owner), owner, null);
-        assertEquals(200, lastMapResponse.getStatusCode().value(), responseBody());
+        assertEquals(200, lastResponse.getStatusCode().value(), responseBody());
         assertEquals(venue, requireMapBody().get("venue"));
     }
 
     @Then("the gig created by {string} still belongs to that user")
     public void gigStillBelongsToOwner(String owner) {
         requestMap(HttpMethod.GET, "/getGigById?id=" + gigId(owner), owner, null);
-        assertEquals(200, lastMapResponse.getStatusCode().value(), responseBody());
+        assertEquals(200, lastResponse.getStatusCode().value(), responseBody());
         assertEquals(ownerIds.get(owner), requireMapBody().get("userId"));
     }
 
     @Then("the gig created by {string} no longer exists")
     public void gigNoLongerExists(String owner) {
         requestMap(HttpMethod.GET, "/getGigById?id=" + gigId(owner), owner, null);
-        assertEquals(404, lastMapResponse.getStatusCode().value(), responseBody());
+        assertEquals(404, lastResponse.getStatusCode().value(), responseBody());
     }
 
     @When("an unauthenticated client requests the gigs list")
@@ -199,33 +193,35 @@ public class GigsAppSteps {
         if (currency != null) {
             body.put("currency", currency);
         }
-        lastMapResponse = null;
-        lastTextResponse = restTemplate.exchange(
-                "/register",
-                HttpMethod.POST,
-                new HttpEntity<>(body, jsonHeaders(null)),
-                String.class
-        );
+        requestText(HttpMethod.POST, "/register", null, body);
     }
 
     private void requestMap(HttpMethod method, String path, String login, Map<String, ?> body) {
-        lastTextResponse = null;
-        lastMapResponse = restTemplate.exchange(
-                path,
-                method,
-                new HttpEntity<>(body, jsonHeaders(login)),
-                Map.class
-        );
+        request(method, path, login, body);
     }
 
     private void requestText(HttpMethod method, String path, String login, Object body) {
-        lastMapResponse = null;
-        lastTextResponse = restTemplate.exchange(
-                path,
-                method,
-                new HttpEntity<>(body, jsonHeaders(login)),
-                String.class
-        );
+        request(method, path, login, body);
+    }
+
+    private void request(HttpMethod method, String path, String login, Object body) {
+        RestClient.RequestBodySpec request = restClient.method(method)
+                .uri(path)
+                .headers(headers -> headers.addAll(jsonHeaders(login)));
+        if (body != null) {
+            request.body(body);
+        }
+        lastResponse = request.exchange((clientRequest, clientResponse) -> {
+            String payload;
+            try {
+                payload = new String(clientResponse.getBody().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            } catch (IOException exception) {
+                throw new IllegalStateException("Unable to read HTTP response body", exception);
+            }
+            return ResponseEntity.status(clientResponse.getStatusCode())
+                    .headers(headers -> headers.putAll(clientResponse.getHeaders()))
+                    .body(payload);
+        });
     }
 
     private HttpHeaders jsonHeaders(String login) {
@@ -258,15 +254,16 @@ public class GigsAppSteps {
     }
 
     private Map requireMapBody() {
-        assertNotNull(lastMapResponse);
-        assertNotNull(lastMapResponse.getBody(), responseBody());
-        return lastMapResponse.getBody();
+        assertNotNull(lastResponse);
+        assertNotNull(lastResponse.getBody(), responseBody());
+        try {
+            return objectMapper.readValue(lastResponse.getBody(), Map.class);
+        } catch (Exception exception) {
+            throw new AssertionError("The response body is not valid JSON: " + responseBody(), exception);
+        }
     }
 
     private String responseBody() {
-        if (lastTextResponse != null) {
-            return lastTextResponse.getBody();
-        }
-        return lastMapResponse == null ? null : String.valueOf(lastMapResponse.getBody());
+        return lastResponse == null ? null : lastResponse.getBody();
     }
 }
