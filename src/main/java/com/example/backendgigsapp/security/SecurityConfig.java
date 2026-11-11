@@ -37,6 +37,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // The API is stateless and authenticates through bearer tokens, not session cookies.
             .csrf(csrf -> csrf.disable())
+            // The API has a custom token-revocation endpoint; bypass Spring Security's default session logout handler.
+            .logout(logout -> logout.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/register").permitAll()
