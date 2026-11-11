@@ -12,13 +12,11 @@ Feature: Gig management and ownership
     Then response status is 200
     When user "gig-owner" reads their gig
     Then response status is 200
-    And response contains:
-      """yml
-      venue: Le Zénith
-      """
+    And response contains venue "Le Zénith"
     When user "gig-owner" deletes their gig
     Then response status is 204
     Then the gig created by "gig-owner" no longer exists
+    And the gigs document contains nothing
 
   Scenario: A user cannot update another user's gig
     Given user "gig-owner-a" is registered with password "correct-horse-123"
